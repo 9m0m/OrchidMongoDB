@@ -1,0 +1,73 @@
+.floral-footer {
+    background-color: #4a2c3d;
+    color: #ffffff;
+    padding: 2rem 0;
+    margin-top: auto;
+}
+
+.footer-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+}
+
+.footer-column {
+    text-align: center;
+}
+
+.floral-footer-title {
+    font-family: 'Dancing Script', cursive;
+    color: #d4a5d6;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+
+.floral-footer-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: #e6b8c0;
+    line-height: 1.5;
+}
+
+.social-icons {
+    margin-top: 1rem;
+}
+
+.floral-social-icon {
+    color: #a8d5ba;
+    font-size: 1.5rem;
+    margin: 0 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.floral-social-icon:hover {
+    color: #ffffff;
+}
+
+.copyright {
+    background-color: #3a1c2d;
+    padding: 1rem 0;
+    margin-top: 2rem;
+}
+
+.floral-copyright-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    color: #e6b8c0;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .footer-row {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-column {
+        margin-bottom: 2rem;
+    }
+
+    .copyright {
+        margin-top: 1rem;
+    }
+}

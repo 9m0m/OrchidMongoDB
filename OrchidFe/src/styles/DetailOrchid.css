@@ -1,0 +1,78 @@
+.detail-orchid-container {
+    max-width: 1400px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background: linear-gradient(135deg, #fff5e6 0%, #f8e1e9 100%) url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.floral-card {
+    border: none;
+    border-radius: 15px;
+    background: #ffffff;
+}
+
+.floral-card-header {
+    background: #f8e1e9;
+    border-bottom: 2px solid #a8d5ba;
+    padding: 1.5rem;
+}
+
+.floral-badge {
+    background: linear-gradient(45deg, #a8d5ba, #d4a5d6);
+    color: white;
+    font-size: 1.2rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+}
+
+.floral-badge-natural {
+    background: #a8d5ba;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+}
+
+.floral-badge-industrial {
+    background: #d4a5d6;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+}
+
+.floral-image {
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+    max-width: 100%;
+    height: auto;
+}
+
+.floral-image:hover {
+    transform: scale(1.05);
+}
+
+.floral-badge-svg {
+    background: #e6b8c0;
+    padding: 0.6rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge-container {
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .detail-orchid-container {
+        margin: 2rem 1rem;
+        padding: 1.5rem;
+    }
+
+    .floral-badge {
+        font-size: 1rem;
+    }
+}

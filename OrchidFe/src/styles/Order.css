@@ -1,0 +1,81 @@
+.order-container {
+    max-width: 1000px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background: linear-gradient(135deg, #fff5e6 0%, #f8e1e9 100%) url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.floral-card {
+    border: none;
+    border-radius: 15px;
+    background: #ffffff;
+    padding: 2rem;
+}
+
+.floral-title {
+    font-family: 'Dancing Script', cursive;
+    color: #4a2c3d;
+    font-size: 3rem;
+    text-align: center;
+    text-shadow: 1px 1px 4px #e6b8c0;
+    margin-bottom: 2rem;
+}
+
+.floral-subtitle {
+    font-family: 'Playfair Display', serif;
+    color: #4a2c3d;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.floral-input {
+    border: 2px solid #a8d5ba;
+    border-radius: 10px;
+    padding: 0.8rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.floral-input:focus {
+    border-color: #d4a5d6;
+    box-shadow: 0 0 8px rgba(212, 165, 214, 0.6);
+    outline: none;
+}
+
+.floral-checkbox {
+    margin-bottom: 0.5rem;
+    font-family: 'Playfair Display', serif;
+    color: #4a2c3d;
+}
+
+.floral-button {
+    background: linear-gradient(45deg, #a8d5ba, #d4a5d6);
+    border: none;
+    border-radius: 12px;
+    padding: 0.8rem 2rem;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.floral-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .order-container {
+        margin: 2rem 1rem;
+        padding: 1.5rem;
+    }
+
+    .floral-title {
+        font-size: 2.2rem;
+    }
+
+    .floral-subtitle {
+        font-size: 1.3rem;
+    }
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Orchid.iml" filepath="$PROJECT_DIR$/.idea/Orchid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/OrchidService/OrchidService.iml" filepath="$PROJECT_DIR$/OrchidService/OrchidService.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,61 @@
+.floral-container {
+    max-width: 1200px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background: linear-gradient(135deg, #fff5e6 0%, #f8e1e9 100%) url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.floral-card {
+    border: none;
+    border-radius: 15px;
+    background: #ffffff;
+    padding: 2rem;
+}
+
+.floral-title {
+    font-family: 'Dancing Script', cursive;
+    color: #4a2c3d;
+    font-size: 3rem;
+    text-align: center;
+    text-shadow: 1px 1px 4px #e6b8c0;
+    margin-bottom: 2rem;
+}
+
+.floral-tabs .nav-link {
+    font-family: 'Playfair Display', serif;
+    color: #4a2c3d;
+    font-size: 1.2rem;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.8rem 1.5rem;
+    transition: border-bottom 0.3s ease, color 0.3s ease;
+}
+
+.floral-tabs .nav-link:hover {
+    color: #d4a5d6;
+    border-bottom: 2px solid #d4a5d6;
+}
+
+.floral-tabs .nav-link.active {
+    color: #d4a5d6;
+    border-bottom: 2px solid #d4a5d6;
+    background: transparent;
+}
+
+@media (max-width: 768px) {
+    .floral-container {
+        margin: 2rem 1rem;
+        padding: 1.5rem;
+    }
+
+    .floral-title {
+        font-size: 2.2rem;
+    }
+
+    .floral-tabs .nav-link {
+        font-size: 1rem;
+        padding: 0.6rem 1rem;
+    }
+}

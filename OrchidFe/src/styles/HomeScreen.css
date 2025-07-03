@@ -1,0 +1,148 @@
+.home-screen {
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.hero-section {
+    position: relative;
+    width: 100%;
+    height: 70vh;
+    background: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+    display: flex;
+    align-items: center;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(74, 44, 61, 0.6);
+    display: flex;
+    align-items: center;
+}
+
+.hero-content {
+    color: #ffffff;
+    text-align: center;
+    padding: 2rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.floral-hero-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.floral-hero-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.floral-hero-button {
+    background: linear-gradient(45deg, #a8d5ba, #d4a5d6);
+    border: none;
+    border-radius: 25px;
+    padding: 1rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #ffffff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.floral-hero-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.home-container {
+    padding: 3rem 0;
+}
+
+.floral-title {
+    font-family: 'Dancing Script', cursive;
+    color: #4a2c3d;
+    font-size: 2.5rem;
+    text-align: center;
+    text-shadow: 1px 1px 4px #e6b8c0;
+    margin-bottom: 2rem;
+}
+
+.floral-card {
+    border: none;
+    border-radius: 10px;
+    background: #ffffff;
+    transition: transform 0.3s ease;
+}
+
+.floral-card:hover {
+    transform: translateY(-10px);
+}
+
+.floral-card-img {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.floral-card-title {
+    font-family: 'Playfair Display', serif;
+    color: #4a2c3d;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.floral-button {
+    background: linear-gradient(45deg, #a8d5ba, #d4a5d6);
+    border: none;
+    border-radius: 12px;
+    padding: 0.8rem 2rem;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    width: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.floral-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        height: 50vh;
+    }
+
+    .floral-hero-title {
+        font-size: 2rem;
+    }
+
+    .floral-hero-text {
+        font-size: 1rem;
+    }
+
+    .floral-hero-button {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .floral-card-img {
+        height: 150px;
+    }
+
+    .floral-card-title {
+        font-size: 1.2rem;
+    }
+}

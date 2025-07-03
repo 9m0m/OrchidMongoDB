@@ -1,0 +1,60 @@
+.floral-navbar {
+    background: linear-gradient(to right, #a8d5ba, #d4a5d6);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.floral-brand {
+    font-family: 'Dancing Script', cursive;
+    color: #4a2c3d;
+    font-size: 2rem;
+    font-weight: 700;
+    text-shadow: 1px 1px 3px #e6b8c0;
+    transition: color 0.3s ease;
+}
+
+.floral-brand:hover {
+    color: #ffffff;
+}
+
+.floral-nav-link {
+    color: #ffffff;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin: 0 1rem;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.floral-nav-link:hover {
+    color: #4a2c3d;
+    transform: translateY(-2px);
+}
+
+.floral-nav-dropdown .dropdown-menu {
+    background: #fff5e6;
+    border: 2px solid #a8d5ba;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.floral-nav-dropdown .dropdown-item {
+    font-family: 'Playfair Display', serif;
+    color: #4a2c3d;
+    transition: background 0.3s ease;
+}
+
+.floral-nav-dropdown .dropdown-item:hover {
+    background: #f8e1e9;
+}
+
+@media (max-width: 992px) {
+    .floral-nav-link {
+        margin: 0.5rem 0;
+    }
+
+    .floral-brand {
+        font-size: 1.8rem;
+    }
+}
