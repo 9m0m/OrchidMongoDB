@@ -10,10 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountDTO {
-    private Integer accountId;
+    private String accountId;       // Changed from 'id' to 'accountId' to match controller usage
     private String accountName;
     private String email;
-    private String password;
-    private Integer roleId;
+    private String roleId;          // String ID for Role reference
     private String roleName;
 }

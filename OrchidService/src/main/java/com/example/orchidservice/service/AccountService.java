@@ -10,7 +10,7 @@ import com.example.orchidservice.pojo.Role;
 import com.example.orchidservice.repository.AccountRepository;
 import com.example.orchidservice.repository.RoleRepository;
 import com.example.orchidservice.service.imp.IAccountService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,156 +19,145 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class AccountService implements IAccountService {
 
-    private final AccountRepository accountRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtService jwtService;
 
     @Override
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
-    }
-
-    @Override
-    public Optional<Account> getAccountById(Integer id) {
-        return accountRepository.findById(id);
-    }
-
-    @Override
-    @Transactional
-    public Account saveAccount(Account account) {
-        if (account.getPassword() != null && !account.getPassword().isEmpty()) {
-            account.setPassword(passwordEncoder.encode(account.getPassword()));
-        }
-        return accountRepository.save(account);
-    }
-
-    @Override
-    @Transactional
-    public void deleteAccount(Integer id) {
-        accountRepository.deleteById(id);
-    }
-
-    @Override
-    public Optional<Account> getAccountByEmail(String email) {
-        return accountRepository.findByEmail(email);
-    }
-
-    @Override
-    public List<Account> getAccountsByRoleId(Integer roleId) {
-        return accountRepository.findByRoleRoleId(roleId);
-    }
-
-    @Override
-    @Transactional
     public RegisterResponseDTO register(RegisterRequestDTO request) {
-        // Check if email already exists
-        if (accountRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
+        if (accountRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already exists");
         }
 
-        // Get User role (default role)
-        Role userRole = roleRepository.findByRoleName("User")
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "User role not found"));
+        Role role = roleRepository.findById(request.getRoleId())
+                .orElseThrow(() -> new RuntimeException("Role not found"));
 
         Account account = new Account();
         account.setAccountName(request.getAccountName());
         account.setEmail(request.getEmail());
         account.setPassword(passwordEncoder.encode(request.getPassword()));
-        account.setRole(userRole);
+        account.setRole(role);
 
         Account savedAccount = accountRepository.save(account);
 
         return RegisterResponseDTO.builder()
-                .accountId(savedAccount.getAccountId())
+                .accountId(savedAccount.getId())
                 .accountName(savedAccount.getAccountName())
                 .email(savedAccount.getEmail())
-                .message("Registration successful")
+                .roleName(savedAccount.getRole().getRoleName())
+                .message("Account registered successfully")
                 .build();
     }
 
     @Override
-    @Transactional
     public LoginResponseDTO login(LoginRequestDTO request) {
         Account account = accountRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
         if (!passwordEncoder.matches(request.getPassword(), account.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+            throw new RuntimeException("Invalid email or password");
         }
 
         String token = jwtService.generateToken(account);
 
         return LoginResponseDTO.builder()
                 .token(token)
-                .accountId(account.getAccountId())
+                .accountId(account.getId())
                 .accountName(account.getAccountName())
                 .email(account.getEmail())
                 .roleName(account.getRole().getRoleName())
-                .message("Login successful")
                 .build();
     }
 
     @Override
-    @Transactional
-    public void logout(String token) {
-        // Add token to blacklist or invalidate token logic here if needed
-        // For now, we'll just let the token expire naturally
+    public AccountDTO getAccountById(String id) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        return convertToDTO(account);
     }
 
-    // Admin operations
     @Override
-    @Transactional
+    public List<AccountDTO> getAllAccounts() {
+        return accountRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public AccountDTO updateAccount(String id, AccountDTO accountDTO) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        account.setAccountName(accountDTO.getAccountName());
+        account.setEmail(accountDTO.getEmail());
+
+        Account updatedAccount = accountRepository.save(account);
+        return convertToDTO(updatedAccount);
+    }
+
+    @Override
+    public void deleteAccount(String id) {
+        if (!accountRepository.existsById(id)) {
+            throw new RuntimeException("Account not found");
+        }
+        accountRepository.deleteById(id);
+    }
+
+    @Override
+    public Account findByEmail(String email) {
+        return accountRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
+
+    @Override
+    public void logout(String token) {
+        if (token != null) {
+            jwtService.invalidateToken(token);
+        }
+    }
+
+    @Override
     public Account createAccount(AccountDTO accountDTO) {
-        // Check if email already exists
-        if (accountRepository.findByEmail(accountDTO.getEmail()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
+        if (accountRepository.existsByEmail(accountDTO.getEmail())) {
+            throw new RuntimeException("Email already exists");
         }
 
         Role role = roleRepository.findById(accountDTO.getRoleId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role not found"));
+                .orElseThrow(() -> new RuntimeException("Role not found"));
 
         Account account = new Account();
         account.setAccountName(accountDTO.getAccountName());
         account.setEmail(accountDTO.getEmail());
-        account.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
+        // Default password same as email or a generated one; adjust as needed
+        String defaultPassword = accountDTO.getEmail();
+        account.setPassword(passwordEncoder.encode(defaultPassword));
         account.setRole(role);
 
-        return accountRepository.save(account);
+        Account savedAccount = accountRepository.save(account);
+        return savedAccount;
     }
 
-    @Override
-    @Transactional
-    public Account updateAccount(Integer id, AccountDTO accountDTO) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
-
-        // Check if email is being changed and if the new email already exists
-        if (!account.getEmail().equals(accountDTO.getEmail())) {
-            if (accountRepository.findByEmail(accountDTO.getEmail()).isPresent()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
-            }
-        }
-
-        Role role = roleRepository.findById(accountDTO.getRoleId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role not found"));
-
-        account.setAccountName(accountDTO.getAccountName());
-        account.setEmail(accountDTO.getEmail());
-
-        // Only update password if provided
-        if (accountDTO.getPassword() != null && !accountDTO.getPassword().isEmpty()) {
-            account.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
-        }
-
-        account.setRole(role);
-
-        return accountRepository.save(account);
+    private AccountDTO convertToDTO(Account account) {
+        return new AccountDTO(
+                account.getId(),
+                account.getAccountName(),
+                account.getEmail(),
+                account.getRole().getRoleName(),
+                account.getRole().getId() // Add the missing fifth argument
+        );
     }
 }

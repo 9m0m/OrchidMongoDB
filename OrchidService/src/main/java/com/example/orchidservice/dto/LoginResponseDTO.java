@@ -6,16 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class LoginResponseDTO {
-    private Integer accountId;
+    private String token;
+    private String accountId;       // String ID for Account
     private String accountName;
     private String email;
-    private Integer roleId;
     private String roleName;
-    private String message;
-    private boolean success;
-    private String token; // For future JWT implementation
 }

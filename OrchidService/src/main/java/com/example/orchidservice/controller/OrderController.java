@@ -29,7 +29,7 @@ public class OrderController {
             }
 
             Account currentUser = (Account) authentication.getPrincipal();
-            List<OrderDTO> orders = orderService.getOrdersByAccount(currentUser.getAccountId());
+            List<OrderDTO> orders = orderService.getOrdersByAccount(currentUser.getId());
             return new ResponseEntity<>(orders, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -37,7 +37,7 @@ public class OrderController {
     }
 
     @GetMapping("/account/{accountId}")
-    public ResponseEntity<List<OrderDTO>> getOrdersByAccount(@PathVariable Integer accountId) {
+    public ResponseEntity<List<OrderDTO>> getOrdersByAccount(@PathVariable String accountId) {
         try {
             List<OrderDTO> orders = orderService.getOrdersByAccount(accountId);
             return new ResponseEntity<>(orders, HttpStatus.OK);
@@ -70,7 +70,7 @@ public class OrderController {
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<OrderDTO> updateOrderStatus(
-            @PathVariable Integer id,
+            @PathVariable String id,
             @RequestParam String status) {
         try {
             OrderDTO updatedOrder = orderService.updateOrderStatus(id, status);
@@ -83,7 +83,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}/total")
-    public ResponseEntity<Double> calculateOrderTotal(@PathVariable Integer id) {
+    public ResponseEntity<Double> calculateOrderTotal(@PathVariable String id) {
         try {
             Double total = orderService.calculateOrderTotal(id);
             return new ResponseEntity<>(total, HttpStatus.OK);
@@ -104,7 +104,7 @@ public class OrderController {
 
             Account currentUser = (Account) authentication.getPrincipal();
             // Set the account ID from the authenticated user
-            orderDTO.setAccountId(currentUser.getAccountId());
+            orderDTO.setAccountId(currentUser.getId());
 
             OrderDTO createdOrder = orderService.saveOrder(orderDTO);
             return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);

@@ -6,9 +6,9 @@ import java.util.Optional;
 
 public interface ICategoryService {
     List<CategoryDTO> getAllCategories();
-    Optional<CategoryDTO> getCategoryById(Integer id);
+    Optional<CategoryDTO> getCategoryById(String id);
     CategoryDTO saveCategory(CategoryDTO categoryDTO);
-    CategoryDTO updateCategory(Integer id, CategoryDTO categoryDTO);
-    void deleteCategory(Integer id);
+    CategoryDTO updateCategory(String id, CategoryDTO categoryDTO);
+    void deleteCategory(String id);
     Optional<CategoryDTO> getCategoryByName(String name);
 }

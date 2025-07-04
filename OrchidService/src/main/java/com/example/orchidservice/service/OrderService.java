@@ -39,7 +39,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public Optional<OrderDTO> getOrderById(Integer id) {
+    public Optional<OrderDTO> getOrderById(String id) {
         return orderRepository.findById(id)
                 .map(this::convertToDTO);
     }
@@ -62,7 +62,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderDTO updateOrder(Integer id, OrderDTO orderDTO) {
+    public OrderDTO updateOrder(String id, OrderDTO orderDTO) {
         Optional<Order> existing = orderRepository.findById(id);
         if (existing.isPresent()) {
             Order order = existing.get();
@@ -88,13 +88,13 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void deleteOrder(Integer id) {
+    public void deleteOrder(String id) {
         orderRepository.deleteById(id);
     }
 
     @Override
-    public List<OrderDTO> getOrdersByAccount(Integer accountId) {
-        return orderRepository.findByAccount_AccountId(accountId).stream()
+    public List<OrderDTO> getOrdersByAccount(String accountId) {
+        return orderRepository.findByAccount_Id(accountId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -114,7 +114,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderDTO updateOrderStatus(Integer id, String status) {
+    public OrderDTO updateOrderStatus(String id, String status) {
         Optional<Order> existing = orderRepository.findById(id);
         if (existing.isPresent()) {
             Order order = existing.get();
@@ -126,7 +126,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public Double calculateOrderTotal(Integer orderId) {
+    public Double calculateOrderTotal(String orderId) {
         Optional<Order> order = orderRepository.findById(orderId);
         if (order.isPresent()) {
             return order.get().getOrderDetails().stream()
@@ -141,14 +141,14 @@ public class OrderService implements IOrderService {
             return 0.0;
         }
         return orderDetails.stream()
-                .mapToDouble(detail -> detail.getPrice() * detail.getQuantity())
+                .mapToDouble(detail -> detail.getUnitPrice() * detail.getQuantity())
                 .sum();
     }
 
     private OrderDTO convertToDTO(Order order) {
         OrderDTO dto = new OrderDTO();
-        dto.setId(order.getId());
-        dto.setAccountId(order.getAccount() != null ? order.getAccount().getAccountId() : null);
+        dto.setOrderId(order.getId());
+        dto.setAccountId(order.getAccount() != null ? order.getAccount().getId() : null);
         dto.setAccountName(order.getAccount() != null ? order.getAccount().getAccountName() : null);
         dto.setOrderDate(order.getOrderDate());
         dto.setOrderStatus(order.getOrderStatus());
@@ -166,7 +166,7 @@ public class OrderService implements IOrderService {
 
     private Order convertToEntity(OrderDTO orderDTO) {
         Order order = new Order();
-        order.setId(orderDTO.getId());
+        order.setId(orderDTO.getOrderId());
         order.setOrderDate(orderDTO.getOrderDate());
         order.setOrderStatus(orderDTO.getOrderStatus());
         order.setTotalAmount(orderDTO.getTotalAmount());
@@ -191,18 +191,20 @@ public class OrderService implements IOrderService {
 
     private OrderDetailDTO convertOrderDetailToDTO(OrderDetail orderDetail) {
         OrderDetailDTO dto = new OrderDetailDTO();
-        dto.setId(orderDetail.getId());
-        dto.setOrchidId(orderDetail.getOrchid() != null ? orderDetail.getOrchid().getOrchidId() : null);
+        dto.setOrderDetailId(orderDetail.getId());
+        dto.setOrderId(orderDetail.getOrder() != null ? orderDetail.getOrder().getId() : null);
+        dto.setOrchidId(orderDetail.getOrchid() != null ? orderDetail.getOrchid().getId() : null);
         dto.setOrchidName(orderDetail.getOrchid() != null ? orderDetail.getOrchid().getOrchidName() : null);
-        dto.setPrice(orderDetail.getPrice());
+        dto.setUnitPrice(orderDetail.getPrice());
         dto.setQuantity(orderDetail.getQuantity());
+        dto.setSubtotal(orderDetail.getPrice() * orderDetail.getQuantity());
         return dto;
     }
 
     private OrderDetail convertOrderDetailToEntity(OrderDetailDTO detailDTO, Order order) {
         OrderDetail orderDetail = new OrderDetail();
-        orderDetail.setId(detailDTO.getId());
-        orderDetail.setPrice(detailDTO.getPrice());
+        orderDetail.setId(detailDTO.getOrderDetailId());
+        orderDetail.setPrice(detailDTO.getUnitPrice());
         orderDetail.setQuantity(detailDTO.getQuantity());
         orderDetail.setOrder(order);
 

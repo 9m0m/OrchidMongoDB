@@ -1,41 +1,30 @@
 package com.example.orchidservice.pojo;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import java.util.List;
+    import org.springframework.data.annotation.Id;
+    import org.springframework.data.mongodb.core.mapping.Document;
+    import org.springframework.data.mongodb.core.mapping.DBRef;
+    import lombok.Data;
+    import lombok.NoArgsConstructor;
+    import lombok.AllArgsConstructor;
+    import java.util.List;
 
-@Entity
-@Table(name = "orchids")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Orchid {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "orchid_id")
-    private Integer orchidId;
+    @Document(collection = "orchids")
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class Orchid {
+        @Id
+        private String id;
 
-    @Column(name = "is_natural")
-    private Boolean isNatural = true;
+        private Boolean isNatural = true;
+        private String orchidDescription;
+        private String orchidName;
+        private String orchidUrl;
+        private Double price;
 
-    @Column(name = "orchid_description", columnDefinition = "TEXT")
-    private String orchidDescription;
+        @DBRef
+        private Category category;
 
-    @Column(name = "orchid_name", nullable = false)
-    private String orchidName;
-
-    @Column(name = "orchid_url", length = 500)
-    private String orchidUrl;
-
-    @Column(name = "price")
-    private Double price;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
-
-    @OneToMany(mappedBy = "orchid", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderDetail> orderDetails;
-}
+        @DBRef
+        private List<OrderDetail> orderDetails;
+    }

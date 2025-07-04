@@ -9,7 +9,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
 public class DataInitializationConfig {
@@ -24,50 +23,47 @@ public class DataInitializationConfig {
         };
     }
 
-    @Transactional
     public void initializeData(RoleRepository roleRepository, AccountRepository accountRepository) {
         try {
             // Create SuperAdmin role if not exists
-            Role superAdmin = roleRepository.findById(1)
-                    .orElseGet(() -> {
-                        Role role = new Role();
-                        role.setRoleId(1); // Explicitly set ID
-                        role.setRoleName("SuperAdmin");
-                        return roleRepository.saveAndFlush(role);
-                    });
+            Role superAdmin = roleRepository.findByRoleName("SuperAdmin");
+            if (superAdmin == null) {
+                superAdmin = new Role();
+                superAdmin.setRoleName("SuperAdmin");
+                superAdmin = roleRepository.save(superAdmin);
+            }
 
             // Create Admin role if not exists
-            roleRepository.findById(2)
-                    .orElseGet(() -> {
-                        Role role = new Role();
-                        role.setRoleId(2); // Explicitly set ID
-                        role.setRoleName("Admin");
-                        return roleRepository.saveAndFlush(role);
-                    });
+            Role admin = roleRepository.findByRoleName("Admin");
+            if (admin == null) {
+                admin = new Role();
+                admin.setRoleName("Admin");
+                admin = roleRepository.save(admin);
+            }
 
             // Create User role if not exists
-            roleRepository.findById(3)
-                    .orElseGet(() -> {
-                        Role role = new Role();
-                        role.setRoleId(3); // Explicitly set ID
-                        role.setRoleName("User");
-                        return roleRepository.saveAndFlush(role);
-                    });
+            Role user = roleRepository.findByRoleName("User");
+            if (user == null) {
+                user = new Role();
+                user.setRoleName("User");
+                user = roleRepository.save(user);
+            }
 
             // Create default SuperAdmin account if not exists
-            accountRepository.findByEmail("superadmin@gmail.com")
-                    .orElseGet(() -> {
-                        Account defaultAdmin = new Account();
-                        defaultAdmin.setEmail("superadmin@gmail.com");
-                        defaultAdmin.setPassword(passwordEncoder.encode("123456"));
-                        defaultAdmin.setAccountName("SuperAdmin");
-                        defaultAdmin.setRole(superAdmin);
-                        return accountRepository.saveAndFlush(defaultAdmin);
-                    });
+            if (!accountRepository.existsByEmail("superadmin@gmail.com")) {
+                Account defaultAdmin = new Account();
+                defaultAdmin.setEmail("superadmin@gmail.com");
+                defaultAdmin.setPassword(passwordEncoder.encode("123456"));
+                defaultAdmin.setAccountName("SuperAdmin");
+                defaultAdmin.setRole(superAdmin);
+                accountRepository.save(defaultAdmin);
+            }
+
+            System.out.println("Data initialization completed successfully");
         } catch (Exception e) {
             System.err.println("Error during data initialization: " + e.getMessage());
             e.printStackTrace();
-            throw e;
+            throw new RuntimeException("Failed to initialize data", e);
         }
     }
 }

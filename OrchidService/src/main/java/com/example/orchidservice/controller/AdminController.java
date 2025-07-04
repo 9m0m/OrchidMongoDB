@@ -68,8 +68,8 @@ public class AdminController {
                     .accountId(account.getAccountId())
                     .accountName(account.getAccountName())
                     .email(account.getEmail())
-                    .roleId(account.getRole().getRoleId())
-                    .roleName(account.getRole().getRoleName())
+                    .roleId(account.getRoleId())
+                    .roleName(account.getRoleName())
                     .build())
                 .collect(Collectors.toList());
             return ResponseEntity.ok(users);
@@ -87,7 +87,7 @@ public class AdminController {
     }
 
     @GetMapping("/categories/{id}")
-    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Integer id) {
+    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable String id) {
         Optional<CategoryDTO> category = categoryService.getCategoryById(id);
         return category.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -104,7 +104,7 @@ public class AdminController {
     }
 
     @PutMapping("/categories/{id}")
-    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Integer id, @RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable String id, @RequestBody CategoryDTO categoryDTO) {
         try {
             CategoryDTO updated = categoryService.updateCategory(id, categoryDTO);
             return ResponseEntity.ok(updated);
@@ -114,7 +114,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/categories/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable String id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
@@ -127,7 +127,7 @@ public class AdminController {
     }
 
     @GetMapping("/orchids/{id}")
-    public ResponseEntity<OrchidDTO> getOrchidById(@PathVariable Integer id) {
+    public ResponseEntity<OrchidDTO> getOrchidById(@PathVariable String id) {
         Optional<OrchidDTO> orchid = orchidService.getOrchidById(id);
         return orchid.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -144,7 +144,7 @@ public class AdminController {
     }
 
     @PutMapping("/orchids/{id}")
-    public ResponseEntity<OrchidDTO> updateOrchid(@PathVariable Integer id, @RequestBody OrchidDTO orchidDTO) {
+    public ResponseEntity<OrchidDTO> updateOrchid(@PathVariable String id, @RequestBody OrchidDTO orchidDTO) {
         try {
             OrchidDTO updated = orchidService.updateOrchid(id, orchidDTO);
             return ResponseEntity.ok(updated);
@@ -154,7 +154,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/orchids/{id}")
-    public ResponseEntity<Void> deleteOrchid(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteOrchid(@PathVariable String id) {
         orchidService.deleteOrchid(id);
         return ResponseEntity.noContent().build();
     }
@@ -171,7 +171,7 @@ public class AdminController {
     }
 
     @GetMapping("/orders/{id}")
-    public ResponseEntity<OrderDTO> getOrderById(@PathVariable Integer id) {
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable String id) {
         try {
             Optional<OrderDTO> order = orderService.getOrderById(id);
             return order.map(o -> new ResponseEntity<>(o, HttpStatus.OK))
@@ -192,7 +192,7 @@ public class AdminController {
     }
 
     @PutMapping("/orders/{id}")
-    public ResponseEntity<OrderDTO> updateOrder(@PathVariable Integer id, @RequestBody OrderDTO orderDTO) {
+    public ResponseEntity<OrderDTO> updateOrder(@PathVariable String id, @RequestBody OrderDTO orderDTO) {
         try {
             OrderDTO updatedOrder = orderService.updateOrder(id, orderDTO);
             return new ResponseEntity<>(updatedOrder, HttpStatus.OK);
@@ -204,7 +204,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/orders/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteOrder(@PathVariable String id) {
         try {
             orderService.deleteOrder(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -214,7 +214,7 @@ public class AdminController {
     }
 
     @PatchMapping("/orders/{id}/status")
-    public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable Integer id, @RequestBody Map<String, String> statusUpdate) {
+    public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable String id, @RequestBody Map<String, String> statusUpdate) {
         try {
             String newStatus = statusUpdate.get("status");
             if (newStatus == null || newStatus.trim().isEmpty()) {
@@ -239,8 +239,8 @@ public class AdminController {
                     .accountId(account.getAccountId())
                     .accountName(account.getAccountName())
                     .email(account.getEmail())
-                    .roleId(account.getRole().getRoleId())
-                    .roleName(account.getRole().getRoleName())
+                    .roleId(account.getRoleId())
+                    .roleName(account.getRoleName())
                     .build())
                 .collect(Collectors.toList());
             return ResponseEntity.ok(accounts);
@@ -251,22 +251,10 @@ public class AdminController {
     }
 
     @GetMapping("/accounts/{id}")
-    public ResponseEntity<?> getAccountById(@PathVariable Integer id) {
+    public ResponseEntity<?> getAccountById(@PathVariable String id) {
         try {
-            Optional<Account> accountOpt = accountService.getAccountById(id);
-            if (accountOpt.isPresent()) {
-                Account account = accountOpt.get();
-                AccountDTO accountDTO = AccountDTO.builder()
-                    .accountId(account.getAccountId())
-                    .accountName(account.getAccountName())
-                    .email(account.getEmail())
-                    .roleId(account.getRole().getRoleId())
-                    .roleName(account.getRole().getRoleName())
-                    .build();
-                return ResponseEntity.ok(accountDTO);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
+            AccountDTO account = accountService.getAccountById(id);
+            return ResponseEntity.ok(account);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Failed to retrieve account: " + e.getMessage()));
@@ -278,10 +266,10 @@ public class AdminController {
         try {
             Account createdAccount = accountService.createAccount(accountDTO);
             AccountDTO responseDTO = AccountDTO.builder()
-                .accountId(createdAccount.getAccountId())
+                .accountId(createdAccount.getId())
                 .accountName(createdAccount.getAccountName())
                 .email(createdAccount.getEmail())
-                .roleId(createdAccount.getRole().getRoleId())
+                .roleId(createdAccount.getRole().getId())
                 .roleName(createdAccount.getRole().getRoleName())
                 .build();
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
@@ -292,17 +280,10 @@ public class AdminController {
     }
 
     @PutMapping("/accounts/{id}")
-    public ResponseEntity<?> updateAccount(@PathVariable Integer id, @RequestBody AccountDTO accountDTO) {
+    public ResponseEntity<?> updateAccount(@PathVariable String id, @RequestBody AccountDTO accountDTO) {
         try {
-            Account updatedAccount = accountService.updateAccount(id, accountDTO);
-            AccountDTO responseDTO = AccountDTO.builder()
-                .accountId(updatedAccount.getAccountId())
-                .accountName(updatedAccount.getAccountName())
-                .email(updatedAccount.getEmail())
-                .roleId(updatedAccount.getRole().getRoleId())
-                .roleName(updatedAccount.getRole().getRoleName())
-                .build();
-            return ResponseEntity.ok(responseDTO);
+            AccountDTO updatedAccount = accountService.updateAccount(id, accountDTO);
+            return ResponseEntity.ok(updatedAccount);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -312,7 +293,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/accounts/{id}")
-    public ResponseEntity<?> deleteAccount(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteAccount(@PathVariable String id) {
         try {
             accountService.deleteAccount(id);
             return ResponseEntity.noContent().build();
@@ -332,7 +313,7 @@ public class AdminController {
             List<Map<String, Object>> roleData = roles.stream()
                 .map(role -> {
                     Map<String, Object> roleMap = new HashMap<>();
-                    roleMap.put("id", role.getRoleId());
+                    roleMap.put("id", role.getId());
                     roleMap.put("name", role.getRoleName());
                     return roleMap;
                 })
@@ -345,13 +326,13 @@ public class AdminController {
     }
 
     @GetMapping("/roles/{id}")
-    public ResponseEntity<?> getRoleById(@PathVariable Integer id) {
+    public ResponseEntity<?> getRoleById(@PathVariable String id) {
         try {
             Optional<Role> roleOpt = roleRepository.findById(id);
             if (roleOpt.isPresent()) {
                 Role role = roleOpt.get();
                 Map<String, Object> roleData = new HashMap<>();
-                roleData.put("id", role.getRoleId());
+                roleData.put("id", role.getId());
                 roleData.put("name", role.getRoleName());
                 return ResponseEntity.ok(roleData);
             } else {

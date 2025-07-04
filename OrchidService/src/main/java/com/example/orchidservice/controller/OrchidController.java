@@ -23,14 +23,14 @@ public class OrchidController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrchidDTO> getOrchidById(@PathVariable Integer id) {
+    public ResponseEntity<OrchidDTO> getOrchidById(@PathVariable String id) {
         Optional<OrchidDTO> orchid = orchidService.getOrchidById(id);
         return orchid.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<OrchidDTO>> getOrchidsByCategory(@PathVariable Integer categoryId) {
+    public ResponseEntity<List<OrchidDTO>> getOrchidsByCategory(@PathVariable String categoryId) {
         List<OrchidDTO> orchids = orchidService.getOrchidsByCategory(categoryId);
         return ResponseEntity.ok(orchids);
     }

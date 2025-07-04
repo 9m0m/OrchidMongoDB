@@ -1,25 +1,23 @@
 package com.example.orchidservice.pojo;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.util.List;
 
-@Entity
-@Table(name = "roles")
+@Document(collection = "roles")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id")
-    private Integer roleId;
+    private String id;
 
-    @Column(name = "role_name", nullable = false)
     private String roleName;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @DBRef
     private List<Account> accounts;
 }

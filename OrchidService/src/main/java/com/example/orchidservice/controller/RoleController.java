@@ -11,5 +11,4 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/roles")
 public class RoleController {
-
 }

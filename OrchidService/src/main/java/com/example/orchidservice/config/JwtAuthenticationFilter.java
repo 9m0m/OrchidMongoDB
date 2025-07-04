@@ -51,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.debug("Processing request for email: {}", email);
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                Optional<Account> accountOpt = accountRepository.findByEmailWithRole(email);
+                Optional<Account> accountOpt = accountRepository.findByEmail(email);
 
                 if (accountOpt.isPresent()) {
                     Account account = accountOpt.get();

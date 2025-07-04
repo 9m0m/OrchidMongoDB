@@ -1,7 +1,6 @@
 package com.example.orchidservice.service;
 
 import com.example.orchidservice.dto.CategoryDTO;
-import com.example.orchidservice.dto.OrchidDTO;
 import com.example.orchidservice.pojo.Category;
 import com.example.orchidservice.repository.CategoryRepository;
 import com.example.orchidservice.service.imp.ICategoryService;
@@ -25,7 +24,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public Optional<CategoryDTO> getCategoryById(Integer id) {
+    public Optional<CategoryDTO> getCategoryById(String id) {
         return categoryRepository.findById(id)
                 .map(this::convertToDTO);
     }
@@ -39,7 +38,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public CategoryDTO updateCategory(Integer id, CategoryDTO categoryDTO) {
+    public CategoryDTO updateCategory(String id, CategoryDTO categoryDTO) {
         Optional<Category> existing = categoryRepository.findById(id);
         if (existing.isPresent()) {
             Category category = existing.get();
@@ -51,7 +50,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public void deleteCategory(Integer id) {
+    public void deleteCategory(String id) {
         categoryRepository.deleteById(id);
     }
 
@@ -63,16 +62,15 @@ public class CategoryService implements ICategoryService {
 
     private CategoryDTO convertToDTO(Category category) {
         CategoryDTO dto = new CategoryDTO();
-        dto.setCategoryId(category.getCategoryId());
+        dto.setCategoryId(category.getId()); // Use category.getId() instead of getCategoryId()
         dto.setCategoryName(category.getCategoryName());
         return dto;
     }
 
     private Category convertToEntity(CategoryDTO dto) {
         Category category = new Category();
-        category.setCategoryId(dto.getCategoryId());
+        // Don't set ID for new entities - MongoDB will auto-generate
         category.setCategoryName(dto.getCategoryName());
-        // Don't set orchids during creation
         return category;
     }
 }

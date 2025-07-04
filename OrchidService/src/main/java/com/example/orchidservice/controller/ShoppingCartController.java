@@ -40,7 +40,7 @@ public class ShoppingCartController {
 
     @PostMapping("/add")
     public ResponseEntity<ShoppingCartDTO> addToCart(
-            @RequestParam Integer orchidId,
+            @RequestParam String orchidId,
             @RequestParam Integer quantity) {
         try {
             if (quantity <= 0) {
@@ -56,7 +56,7 @@ public class ShoppingCartController {
 
     @PutMapping("/update")
     public ResponseEntity<ShoppingCartDTO> updateCartItem(
-            @RequestParam Integer orchidId,
+            @RequestParam String orchidId,
             @RequestParam Integer quantity) {
         try {
             String userId = getCurrentUserId();
@@ -68,7 +68,7 @@ public class ShoppingCartController {
     }
 
     @DeleteMapping("/remove/{orchidId}")
-    public ResponseEntity<ShoppingCartDTO> removeFromCart(@PathVariable Integer orchidId) {
+    public ResponseEntity<ShoppingCartDTO> removeFromCart(@PathVariable String orchidId) {
         try {
             String userId = getCurrentUserId();
             ShoppingCartDTO cart = shoppingCartService.removeFromCart(userId, orchidId);
