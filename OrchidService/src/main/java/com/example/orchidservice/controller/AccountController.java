@@ -10,6 +10,7 @@ import com.example.orchidservice.service.imp.IAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -93,6 +94,24 @@ public class AccountController {
             .message("Accounts retrieved successfully")
             .result(accounts)
             .build());
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<ApiResponse<AccountDTO>> getCurrentUserProfile(Authentication authentication) {
+        if (authentication == null || authentication.getPrincipal() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            com.example.orchidservice.pojo.Account current = (com.example.orchidservice.pojo.Account) authentication.getPrincipal();
+            AccountDTO dto = accountService.getAccountById(current.getId());
+            return ResponseEntity.ok(ApiResponse.<AccountDTO>builder()
+                    .code(1000)
+                    .message("Profile retrieved successfully")
+                    .result(dto)
+                    .build());
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @PutMapping("/{id}")

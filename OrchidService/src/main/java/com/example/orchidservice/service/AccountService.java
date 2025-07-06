@@ -151,13 +151,25 @@ public class AccountService implements IAccountService {
         return savedAccount;
     }
 
+    @Override
+    public Account getAccountEntityById(String id) {
+        return accountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
+
+    @Override
+    public AccountDTO saveAccountEntity(Account account) {
+        Account saved = accountRepository.save(account);
+        return convertToDTO(saved);
+    }
+
     private AccountDTO convertToDTO(Account account) {
         return new AccountDTO(
                 account.getId(),
                 account.getAccountName(),
                 account.getEmail(),
-                account.getRole().getRoleName(),
-                account.getRole().getId() // Add the missing fifth argument
+                account.getRole().getId(),
+                account.getRole().getRoleName()
         );
     }
 }

@@ -105,7 +105,8 @@ const AdminService = {
   },
 
   updateOrderStatus: async (id, status) => {
-    return apiClient.patch(`/admin/orders/${id}/status`, { status });
+    const orderId = id ?? '';
+    return apiClient.patch(`/admin/orders/${orderId}/status`, { status });
   },
 
   deleteOrder: async (id) => {

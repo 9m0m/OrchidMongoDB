@@ -24,6 +24,6 @@ public class Order {
     private String orderStatus = "pending";
     private Double totalAmount;
 
-    @DBRef
+    // Store order details as embedded documents instead of DBRefs to avoid reference issues
     private List<OrderDetail> orderDetails;
 }

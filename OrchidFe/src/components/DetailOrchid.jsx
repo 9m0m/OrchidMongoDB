@@ -14,8 +14,8 @@ export default function DetailOrchid() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Parse and validate ID - ensure it's a number
-    const orchidId = id && !isNaN(parseInt(id)) ? parseInt(id) : null;
+    // Use the ID directly as a string (MongoDB uses string IDs)
+    const orchidId = id?.trim();
 
     if (!orchidId) {
       setError('Invalid orchid ID');
@@ -62,7 +62,12 @@ export default function DetailOrchid() {
     }
 
     try {
-      const orchidId = orchid.id || orchid.orchidId;
+      // Use the orchid's _id if available, otherwise fall back to id or orchidId
+      const orchidId = orchid._id || orchid.id || orchid.orchidId;
+      if (!orchidId) {
+        throw new Error('Invalid orchid ID');
+      }
+      console.log('Adding to cart - orchidId:', orchidId);
       await ShoppingCartService.addToCart(orchidId, 1);
       toast.success('Added to cart!');
     } catch (error) {
@@ -103,7 +108,7 @@ export default function DetailOrchid() {
         <div className="row">
           <div className="col-12 col-md-8 p-3">
             <Breadcrumb>
-              <Breadcrumb.Item href="/home">Home</Breadcrumb.Item>
+              <Breadcrumb.Item href="/shop">Shop</Breadcrumb.Item>
               <Breadcrumb.Item active>{orchid.orchidName || 'Loading...'}</Breadcrumb.Item>
             </Breadcrumb>
             <Badge className="floral-badge mb-3">{orchid.orchidName || 'Loading...'}</Badge>

@@ -62,13 +62,13 @@ export default function ListOfOrchids() {
   const onSubmit = async (data) => {
     try {
       setLoading(true);
-      // Ensure isNatural is a boolean and rename image field to orchidUrl
+      // Remove the parseInt for categoryId and orchidUrl mapping
       const formData = {
         ...data,
         isNatural: !!data.isNatural,
         price: parseFloat(data.price),
-        categoryId: parseInt(data.categoryId),
-        orchidUrl: data.image // Map the image field to orchidUrl for backend consistency
+        categoryId: data.categoryId,  // Send as string
+        orchidUrl: data.image
       };
 
       await AdminService.createOrchid(formData);
@@ -78,7 +78,7 @@ export default function ListOfOrchids() {
       toast.success('Orchid added successfully!');
     } catch (error) {
       console.error('Add error:', error);
-      toast.error('Failed to add orchid.');
+      toast.error(error.response?.data?.message || 'Failed to add orchid. Please check the form data.');
     } finally {
       setLoading(false);
     }

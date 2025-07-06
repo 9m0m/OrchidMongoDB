@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import ShoppingCartService from '../services/shoppingCartService';
 import OrderService from '../services/orderService';
+import OrchidService from '../services/orchidService';
 import '../styles/Order.css';
 
 export default function Checkout() {
@@ -31,7 +32,26 @@ export default function Checkout() {
             }
 
             const response = await ShoppingCartService.getCart();
-            const items = response.data.items || [];
+            let items = response.data.items || [];
+
+            // Enrich items with orchid details if missing
+            items = await Promise.all(items.map(async (item) => {
+                if (!item.orchid || !item.orchid.price) {
+                    try {
+                        const orchidId = item.orchidId || item.id || item.orchid?.orchidId;
+                        if (orchidId) {
+                            const orchidRes = await OrchidService.getOrchidById(orchidId);
+                            if (orchidRes?.data) {
+                                item.orchid = orchidRes.data;
+                                item.unitPrice = orchidRes.data.price;
+                            }
+                        }
+                    } catch (err) {
+                        console.error('Failed to fetch orchid details for cart item', item, err);
+                    }
+                }
+                return item;
+            }));
 
             if (items.length === 0) {
                 toast.error('Your cart is empty. Please add items before checkout.');
@@ -56,10 +76,9 @@ export default function Checkout() {
 
     const calculateTotal = () => {
         return cartItems.reduce((total, item) => {
-            const orchid = item.orchid || item;
-            const orchidPrice = orchid?.price || 0;
+            const price = item.unitPrice ?? item.orchid?.price ?? item.price ?? 0;
             const quantity = item.quantity || 1;
-            return total + (orchidPrice * quantity);
+            return total + price * quantity;
         }, 0);
     };
 
@@ -67,18 +86,43 @@ export default function Checkout() {
         try {
             setSubmitting(true);
 
-            // Prepare order data based on your existing Order structure
+            // Prepare order data according to backend's OrderDTO
             const orderData = {
-                orderStatus: 'pending',
+                orderStatus: 'PENDING',
+                orderDate: new Date().toISOString().split('T')[0], // Format as YYYY-MM-DD
                 totalAmount: calculateTotal(),
-                orderDetails: cartItems.map(item => ({
-                    orchidId: item.orchid?.orchidId || item.orchidId,
-                    quantity: item.quantity || 1,
-                    price: item.orchid?.price || item.price || 0
-                }))
+                orderDetails: cartItems.map(item => {
+                    const orchidId = item.orchidId || item.orchid?.orchidId || item.id;
+                    const quantity = parseInt(item.quantity) || 1;
+                    const unitPrice = parseFloat(item.unitPrice ?? item.orchid?.price ?? item.price ?? 0);
+                    
+                    console.log(`Order detail - orchidId: ${orchidId}, quantity: ${quantity}, unitPrice: ${unitPrice}`);
+                    
+                    return {
+                        orchidId: orchidId,
+                        quantity: quantity,
+                        unitPrice: unitPrice
+                    };
+                })
             };
+            
+            console.log('Submitting order data:', JSON.stringify(orderData, null, 2));
 
             console.log('Submitting order:', orderData);
+
+            // Validate order details before sending
+            const invalidDetails = orderData.orderDetails.filter(d => !d.orchidId || d.unitPrice === undefined || d.quantity === undefined);
+            if (invalidDetails.length > 0) {
+                toast.error('Some cart items are missing required information. Please refresh your cart.');
+                setSubmitting(false);
+                return;
+            }
+
+            if (orderData.totalAmount === 0) {
+                toast.error('Order total is 0. Please verify item prices.');
+                setSubmitting(false);
+                return;
+            }
 
             // Create the order
             const response = await OrderService.createOrder(orderData);

@@ -1,137 +1,245 @@
 .orchid-list-container {
-    max-width: 1200px;
-    margin: 4rem auto;
-    padding: 2rem;
-    background: linear-gradient(135deg, #fff5e6 0%, #f8e1e9 100%) url('https://www.transparenttextures.com/patterns/paper-fibers.png');
-    border-radius: 15px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    padding: 2rem 0;
 }
 
-.floral-title {
+.orchid-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.orchid-card {
+    background: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.orchid-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.orchid-image-container {
+    position: relative;
+    width: 100%;
+    padding-top: 75%; /* 4:3 Aspect Ratio */
+    overflow: hidden;
+}
+
+.orchid-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.orchid-details {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.orchid-name {
+    font-family: 'Playfair Display', serif;
+    color: #4a2c3d;
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.orchid-category {
+    display: inline-block;
+    background: linear-gradient(45deg, #a8d5ba, #d4a5d6);
+    color: white;
+    padding: 0.25rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.orchid-description {
+    color: #6c757d;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+.orchid-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.orchid-price {
     font-family: 'Dancing Script', cursive;
     color: #4a2c3d;
-    font-size: 3rem;
-    text-align: center;
-    text-shadow: 1px 1px 4px #e6b8c0;
-    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 
-.floral-table {
-    background: #ffffff;
-    border: 2px solid #a8d5ba;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.orchid-actions {
+    display: flex;
+    gap: 0.5rem;
 }
 
-.floral-table th,
-.floral-table td {
-    vertical-align: middle;
-    text-align: center;
-}
-
-.floral-image {
-    border-radius: 8px;
-    transition: transform 0.3s ease;
-}
-
-.floral-image:hover {
-    transform: scale(1.1);
-}
-
-.floral-button {
-    background: linear-gradient(45deg, #a8d5ba, #d4a5d6);
-    border: none;
-    border-radius: 12px;
-    padding: 0.6rem 1.5rem;
-    color: white;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.floral-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-.floral-button-secondary {
-    background: #e6b8c0;
-    border: none;
-    border-radius: 12px;
-    padding: 0.6rem 1.5rem;
-    color: white;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.floral-button-secondary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-.floral-badge-natural {
-    background: #a8d5ba;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-}
-
-.floral-badge-industrial {
-    background: #d4a5d6;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-}
-
+/* Action Buttons */
 .floral-badge-edit,
 .floral-badge-delete {
-    cursor: pointer;
     padding: 0.5rem 1rem;
-    border-radius: 8px;
-    margin: 0 0.5rem;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    margin-right: 0.5rem;
+    border: 1px solid transparent;
 }
 
 .floral-badge-edit {
-    background: #a8d5ba;
+    background-color: #4a2c3d;
     color: white;
+    border-color: #3a1c2d;
+}
+
+.floral-badge-edit:hover {
+    background-color: #5a3c4d;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    color: white;
+    text-decoration: none;
 }
 
 .floral-badge-delete {
-    background: #e6b8c0;
+    background-color: #e74c3c;
+    color: white;
+    border-color: #c0392b;
+    cursor: pointer;
+}
+
+.floral-badge-delete:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     color: white;
 }
 
-.floral-modal .modal-content {
-    border: 2px solid #a8d5ba;
-    border-radius: 15px;
-    background: #fff5e6;
+.floral-badge-edit i,
+.floral-badge-delete i {
+    font-size: 1rem;
 }
 
-.floral-input {
-    border: 2px solid #a8d5ba;
+/* Hover effects */
+.floral-badge-edit:hover,
+.floral-badge-delete:hover {
+    transform: translateY(-2px) scale(1.05);
+    transition: all 0.2s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .floral-badge-edit,
+    .floral-badge-delete {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+    
+    .floral-badge-edit i,
+    .floral-badge-delete i {
+        font-size: 0.9rem;
+    }
+}
+
+/* Search and Filter */
+.search-filter-container {
+    background: #f8f9fa;
+    padding: 1.5rem;
     border-radius: 10px;
-    padding: 0.8rem;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.floral-input:focus {
-    border-color: #d4a5d6;
-    box-shadow: 0 0 8px rgba(212, 165, 214, 0.6);
+.search-box {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    border: 2px solid #e9ecef;
+    border-radius: 50px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 1rem center;
+}
+
+.search-input:focus {
+    border-color: #a8d5ba;
+    box-shadow: 0 0 0 0.25rem rgba(168, 213, 186, 0.25);
     outline: none;
 }
 
+.filter-dropdown .dropdown-toggle {
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 50px;
+    background: white;
+    color: #4a2c3d;
+    font-weight: 500;
+}
+
+.filter-dropdown .dropdown-toggle::after {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-    .orchid-list-container {
-        margin: 2rem 1rem;
-        padding: 1.5rem;
+    .orchid-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5rem;
     }
-
-    .floral-title {
-        font-size: 2.2rem;
+    
+    .orchid-name {
+        font-size: 1.2rem;
     }
+    
+    .orchid-price {
+        font-size: 1.3rem;
+    }
+}
 
-    .floral-table {
-        font-size: 0.9rem;
+@media (max-width: 576px) {
+    .orchid-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .orchid-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .orchid-actions {
+        width: 100%;
+        justify-content: space-between;
     }
 }

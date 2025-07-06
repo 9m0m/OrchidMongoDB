@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -302,6 +304,51 @@ public class AdminController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Failed to delete account: " + e.getMessage()));
+        }
+    }
+
+    // Update account role with hierarchy rules
+    @PatchMapping("/accounts/{accountId}/role")
+    public ResponseEntity<?> updateAccountRole(@PathVariable String accountId,
+                                               @RequestParam String roleId) {
+        try {
+            // authenticated admin
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || auth.getPrincipal() == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authenticated");
+            }
+
+            Account acting = (Account) auth.getPrincipal();
+            String actingRole = acting.getRole().getRoleName();
+
+            Account target = accountService.getAccountEntityById(accountId);
+            Role newRole = roleRepository.findById(roleId)
+                    .orElseThrow(() -> new RuntimeException("Role not found"));
+
+            // Permission rules
+            if ("SUPERADMIN".equalsIgnoreCase(actingRole)) {
+                // allowed anything
+            } else if ("ADMIN".equalsIgnoreCase(actingRole)) {
+                // cannot touch superadmins
+                if ("SUPERADMIN".equalsIgnoreCase(target.getRole().getRoleName())) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Cannot modify SuperAdmin");
+                }
+                // can assign only ADMIN or USER
+                if (!List.of("ADMIN", "USER").contains(newRole.getRoleName().toUpperCase())) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Admin can assign only ADMIN or USER roles");
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Insufficient permission");
+            }
+
+            target.setRole(newRole);
+            AccountDTO updated = accountService.saveAccountEntity(target);
+            return ResponseEntity.ok(updated);
+
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + ex.getMessage());
         }
     }
 

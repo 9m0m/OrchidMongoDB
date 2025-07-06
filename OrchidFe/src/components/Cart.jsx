@@ -3,6 +3,7 @@ import { Container, Table, Button, Image, Spinner, Alert } from 'react-bootstrap
 import { Link } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import ShoppingCartService from '../services/shoppingCartService';
+import OrchidService from '../services/orchidService';
 import '../styles/Cart.css';
 
 export default function Cart() {
@@ -21,8 +22,25 @@ export default function Cart() {
             setError(null);
             const response = await ShoppingCartService.getCart();
             console.log('Cart response:', response.data); // Debug log to see the actual structure
-            const items = response.data.items || [];
-            console.log('Cart items:', items); // Debug log to see the items structure
+            let items = response.data.items || [];
+
+            // Enrich items with orchid details if missing
+            items = await Promise.all(items.map(async (item) => {
+                if (!item.orchid || !item.orchid.orchidName) {
+                    try {
+                        const orchidId = item.orchidId || item.id || item.orchid?.orchidId;
+                        if (orchidId) {
+                            const orchidRes = await OrchidService.getOrchidById(orchidId);
+                            item.orchid = orchidRes.data;
+                        }
+                    } catch (err) {
+                        console.error('Failed to fetch orchid details for item', item, err);
+                    }
+                }
+                return item;
+            }));
+
+            console.log('Enriched cart items:', items);
             setCartItems(items);
         } catch (error) {
             console.error('Error fetching cart items:', error);
@@ -148,15 +166,20 @@ export default function Cart() {
                             return (
                                 <tr key={item.id || orchidId}>
                                     <td>
-                                        <Image
-                                            src={orchidImage}
-                                            width={50}
-                                            rounded
-                                            className="floral-image"
-                                            onError={(e) => {
-                                                e.target.src = 'https://via.placeholder.com/50';
-                                            }}
-                                        />
+                                        <div className="cart-image-container">
+                                            <Image
+                                                src={orchidImage || '/images/orchid-placeholder.jpg'}
+                                                width={50}
+                                                height={50}
+                                                rounded
+                                                className="floral-image"
+                                                onError={(e) => {
+                                                    e.target.onerror = null; // Prevent infinite loop
+                                                    e.target.src = '/images/orchid-placeholder.jpg';
+                                                }}
+                                                style={{ objectFit: 'cover' }}
+                                            />
+                                        </div>
                                     </td>
                                     <td>{orchidName}</td>
                                     <td>

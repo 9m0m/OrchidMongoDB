@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import AccountService from '../services/accountService';
+import { isAdmin, isAuthenticated, getCurrentUser } from '../services/authService';
 import toast from 'react-hot-toast';
 import '../styles/NavBar.css';
 
@@ -11,60 +12,87 @@ export default function NavBar() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
 
-  // Load user data from localStorage and update state
-  const loadUserData = () => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      const parsedUser = JSON.parse(userData);
-      setCurrentUser(parsedUser);
-      setIsLoggedIn(!!parsedUser.email);
-    } else {
-      setCurrentUser(null);
-      setIsLoggedIn(false);
-    }
-  };
-
-  // Initialize user data when component mounts
+  // Load user data from localStorage on component mount
   useEffect(() => {
+    const loadUserData = () => {
+      try {
+        const user = getCurrentUser();
+        const loggedIn = isAuthenticated();
+        
+        setCurrentUser(user);
+        setIsLoggedIn(loggedIn);
+        
+        // Debug log
+        console.log('NavBar - User data loaded:', {
+          isLoggedIn: loggedIn,
+          user,
+          role: user?.role,
+          isAdmin: isAdmin()
+        });
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        handleLogout();
+      }
+    };
+    
+    // Load initial user data
     loadUserData();
-
-    // Listen for login/logout events
+    
+    // Listen for auth changes from other tabs/windows
+    const handleStorageChange = (e) => {
+      if (['token', 'user', 'roleName'].includes(e.key)) {
+        loadUserData();
+      }
+    };
+    
+    // Listen for custom auth change events
+    const handleAuthChange = () => {
+      console.log('Auth change event received');
+      loadUserData();
+    };
+    
     window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('auth-change', loadUserData);
-
+    window.addEventListener('auth-change', handleAuthChange);
+    
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('auth-change', loadUserData);
+      window.removeEventListener('auth-change', handleAuthChange);
     };
   }, []);
-
-  // Handle storage changes (for multi-tab synchronization)
-  const handleStorageChange = (e) => {
-    if (e.key === 'user' || e.key === 'token') {
-      loadUserData();
-    }
-  };
 
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
-      // Use the AccountService logout method which calls the backend API
-      await AccountService.logout();
-
-      // Update local state
+      
+      try {
+        // Try to call the logout API if possible
+        await AccountService.logout();
+      } catch (error) {
+        console.warn('Error during API logout (proceeding with client-side logout):', error);
+      }
+      
+      // Clear all auth-related data from localStorage
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('roleName');
+      
+      // Update UI state
       setCurrentUser(null);
       setIsLoggedIn(false);
-
-      // Dispatch custom event for other components to react
+      
+      // Notify other components
+      window.dispatchEvent(new Event('storage'));
       window.dispatchEvent(new Event('auth-change'));
-
+      
       toast.success('Logged out successfully!');
       navigate('/login');
     } catch (error) {
       console.error('Logout error:', error);
       toast.error('Error during logout, but you have been logged out locally.');
-
-      // Even if API call fails, update local state
+      
+      // Ensure we clean up even if there's an error
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
       setCurrentUser(null);
       setIsLoggedIn(false);
       window.dispatchEvent(new Event('auth-change'));
@@ -74,11 +102,9 @@ export default function NavBar() {
     }
   };
 
-  // Check if the user has admin privileges
-  const isAdmin = () => {
-    if (!currentUser || !currentUser.role) return false;
-    const role = currentUser.role.toUpperCase();
-    return role === 'ADMIN' || role === 'SUPERADMIN';
+  // Check if current user is admin using the centralized auth service
+  const isUserAdmin = () => {
+    return isAdmin();
   };
 
   return (
@@ -105,9 +131,10 @@ export default function NavBar() {
               {isLoggedIn ? (
                   <>
                     <Nav.Link className="floral-nav-link">Welcome, {currentUser?.name || currentUser?.accountName}</Nav.Link>
-                    {isAdmin() && (
+                    {isUserAdmin() && (
                       <Nav.Link as={Link} to="/admin" className="floral-nav-link">Admin</Nav.Link>
                     )}
+                    <Nav.Link as={Link} to="/profile" className="floral-nav-link">Profile</Nav.Link>
                     <Nav.Link onClick={handleLogout} className="floral-nav-link">Logout</Nav.Link>
                   </>
               ) : (

@@ -30,9 +30,9 @@ export default function Order() {
             }
 
             console.log('Token found, making API request to get user orders');
-            const response = await OrderService.getOrdersByUser();
-            console.log('User orders:', response.data);
-            setOrders(response.data || []);
+            const ordersData = await OrderService.getOrdersByUser();
+            console.log('User orders:', ordersData);
+            setOrders(ordersData || []);
         } catch (error) {
             console.error('Error fetching user orders:', error);
 

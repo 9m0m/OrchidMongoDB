@@ -23,14 +23,20 @@ export default function Register() {
 
         try {
             setLoading(true);
-            // Include all required fields: accountName, email, password, confirmPassword, and roleId (default to 2 for regular users)
-            await AccountService.register({
-                accountName,
-                email,
-                password,
-                confirmPassword,
-                roleId: 3 // Assuming roleId 2 is for regular users
-            });
+            // Match the exact fields from RegisterRequestDTO
+            const registrationData = {
+                accountName: accountName.trim(),
+                email: email.trim().toLowerCase(),
+                password: password,
+                roleId: '6867e3e6270661213163ae1a'  // Must be a valid role ID
+            };
+            
+            // Note: confirmPassword is not part of the DTO, so don't send it
+            // The backend will validate password confirmation separately if needed
+            
+            console.log('Sending registration data:', registrationData);
+            const result = await AccountService.register(registrationData);
+            console.log('Registration successful:', result);
             toast.success('Registration successful! Please login.');
             setTimeout(() => {
                 navigate('/login');

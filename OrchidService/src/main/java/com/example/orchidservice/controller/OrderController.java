@@ -95,21 +95,26 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) {
+    public ResponseEntity<?> createOrder(@RequestBody OrderDTO orderDTO) {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || authentication.getPrincipal() == null) {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || auth.getPrincipal() == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
             }
 
-            Account currentUser = (Account) authentication.getPrincipal();
-            // Set the account ID from the authenticated user
+            Account currentUser = (Account) auth.getPrincipal();
             orderDTO.setAccountId(currentUser.getId());
 
-            OrderDTO createdOrder = orderService.saveOrder(orderDTO);
-            return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            OrderDTO created = orderService.saveOrder(orderDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+
+        } catch (RuntimeException ex) {          // <-- keep stack-trace & message
+            ex.printStackTrace();
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ex.getClass().getSimpleName()+": "+ex.getMessage());
         }
     }
 }

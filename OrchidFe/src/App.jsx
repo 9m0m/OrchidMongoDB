@@ -12,6 +12,8 @@ import Order from './components/Order';
 import Footer from './components/Footer';
 import Cart from './components/Cart';
 import Checkout from './components/Checkout';
+import RoleProtectedRoute from './components/RoleProtectedRoute';
+import Profile from './components/Profile';
 
 export default function App() {
     return (
@@ -23,13 +25,31 @@ export default function App() {
                     <Route path="/shop" element={<Shop />} />
                     <Route path="/home" element={<HomeScreen />} />
                     <Route path="/detail/:id" element={<DetailOrchid />} />
-                    <Route path="/edit/:id" element={<EditOrchid />} />
+                    
+                    {/* Protected Routes */}
+                    <Route path="/edit/:id" element={
+                        <RoleProtectedRoute>
+                            <EditOrchid />
+                        </RoleProtectedRoute>
+                    } />
+                    
+                    <Route path="/admin" element={
+                        <RoleProtectedRoute requiredRoles={['Admin', 'Superadmin']}>
+                            <AdminDashboard />
+                        </RoleProtectedRoute>
+                    } />
+                    
+                    <Route path="/order" element={<Order />} />
+                    
+                    <Route path="/cart" element={<Cart />} />
+                    
+                    <Route path="/checkout" element={<Checkout />} />
+                    
+                    <Route path="/profile" element={<Profile />} />
+                    
+                    {/* Public Routes */}
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/admin" element={<AdminDashboard />} />
-                    <Route path="/order" element={<Order />} />
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/checkout" element={<Checkout />} />
                 </Routes>
             </main>
             <Footer />

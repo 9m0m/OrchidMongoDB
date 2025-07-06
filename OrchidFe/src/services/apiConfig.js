@@ -1,23 +1,47 @@
 import axios from 'axios';
 
-const API_BASE_URL ='http://localhost:8080/api';
+// Use environment variable or fallback to default
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
-const apiClient = axios.create({
+export const API_BASE_URL = `${API_URL}/api`;
+
+export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
+  withCredentials: true, // Important for cookies/sessions
 });
+
+// For backward compatibility
+export const apiConfig = {
+  baseURL: API_BASE_URL,
+  client: apiClient
+};
 
 // Add a request interceptor for handling auth token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      console.log('Adding authorization token to request:', config.url);
-      config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      console.log('No token available for request:', config.url);
+    // Skip adding token for login/register requests
+    const publicEndpoints = ['/accounts/login', '/accounts/register'];
+    const isPublicEndpoint = publicEndpoints.some(endpoint => 
+      config.url.endsWith(endpoint)
+    );
+
+    if (!isPublicEndpoint) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        console.log('Adding authorization token to request:', config.url);
+        config.headers.Authorization = `Bearer ${token}`;
+      } else {
+        console.warn('No token available for request:', config.url);
+        // Optionally redirect to login or handle missing token
+        if (typeof window !== 'undefined' && !window.location.pathname.includes('login')) {
+          console.log('Redirecting to login...');
+          window.location.href = '/login';
+        }
+      }
     }
     return config;
   },

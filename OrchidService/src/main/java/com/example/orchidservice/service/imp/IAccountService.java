@@ -19,4 +19,6 @@ public interface IAccountService {
     Account findByEmail(String email);
     void logout(String token); 
     Account createAccount(AccountDTO accountDTO);
+    Account getAccountEntityById(String id);
+    AccountDTO saveAccountEntity(Account account);
 }

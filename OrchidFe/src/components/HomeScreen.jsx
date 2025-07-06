@@ -5,8 +5,8 @@ import axios from 'axios';
 import '../styles/HomeScreen.css';
 
 export default function HomeScreen() {
-    const baseUrl = import.meta.env.VITE_API_URL;
     const [api, setAPI] = useState([]);
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
     useEffect(() => {
         fetchData();
@@ -14,11 +14,46 @@ export default function HomeScreen() {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(baseUrl);
-            const sortedData = response.data.sort((a, b) => parseInt(b.id) - parseInt(a.id));
+            // Make sure to use the correct endpoint for fetching orchids
+            const response = await axios.get(`${apiBaseUrl}/orchids`);
+            console.log('API Response:', response);
+            
+            if (!response.data) {
+                console.error('No data in response');
+                return;
+            }
+            
+            let dataToSort = [];
+            const responseData = response.data;
+            
+            // Handle different response formats
+            if (Array.isArray(responseData)) {
+                dataToSort = [...responseData];
+            } else if (responseData.data && Array.isArray(responseData.data)) {
+                dataToSort = [...responseData.data];
+            } else if (responseData.result && Array.isArray(responseData.result)) {
+                dataToSort = [...responseData.result];
+            } else if (responseData.items && Array.isArray(responseData.items)) {
+                dataToSort = [...responseData.items];
+            } else if (typeof responseData === 'object') {
+                // If it's a single object, put it in an array
+                dataToSort = [responseData];
+            }
+            
+            // Sort the data if we have items to sort
+            const sortedData = dataToSort.length > 0 
+                ? dataToSort.sort((a, b) => {
+                    // Handle cases where id might be a string or number
+                    const idA = typeof a.id === 'string' ? parseInt(a.id, 10) : a.id;
+                    const idB = typeof b.id === 'string' ? parseInt(b.id, 10) : b.id;
+                    return idB - idA;
+                })
+                : [];
+                
             setAPI(sortedData);
         } catch (error) {
             console.error('Error fetching data:', error);
+            setAPI([]); // Reset to empty array on error
         }
     };
 

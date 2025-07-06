@@ -206,7 +206,9 @@ public class OrderService implements IOrderService {
         orderDetail.setId(detailDTO.getOrderDetailId());
         orderDetail.setPrice(detailDTO.getUnitPrice());
         orderDetail.setQuantity(detailDTO.getQuantity());
-        orderDetail.setOrder(order);
+
+        // Avoid setting order reference here to prevent DBRef cycle before order is persisted
+        // orderDetail.setOrder(order);
 
         // Set orchid if provided
         if (detailDTO.getOrchidId() != null) {

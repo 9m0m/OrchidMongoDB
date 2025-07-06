@@ -66,7 +66,7 @@ export default function OrderManagement() {
     const onSubmit = async (data) => {
         try {
             setLoading(true);
-            await AdminService.updateOrderStatus(selectedOrder.id, data.orderStatus);
+            await AdminService.updateOrderStatus(selectedOrder.id || selectedOrder.orderId, data.orderStatus);
             toast.success("Order status updated successfully!");
             handleClose();
             fetchOrders();
@@ -120,7 +120,7 @@ export default function OrderManagement() {
 
     const quickStatusUpdate = async (orderId, newStatus) => {
         try {
-            await AdminService.updateOrderStatus(orderId, newStatus);
+            await AdminService.updateOrderStatus(orderId ?? orderId, newStatus);
             toast.success(`Order status updated to ${newStatus}!`);
             fetchOrders();
         } catch (error) {
@@ -270,7 +270,7 @@ export default function OrderManagement() {
                                                         <Button
                                                             variant="outline-info"
                                                             size="sm"
-                                                            onClick={() => quickStatusUpdate(order.id, 'confirmed')}
+                                                            onClick={() => quickStatusUpdate(order.id || order.orderId, 'confirmed')}
                                                             title="Confirm Order"
                                                         >
                                                             <i className="bi bi-check-circle"></i> Confirm
@@ -280,7 +280,7 @@ export default function OrderManagement() {
                                                         <Button
                                                             variant="outline-primary"
                                                             size="sm"
-                                                            onClick={() => quickStatusUpdate(order.id, 'shipped')}
+                                                            onClick={() => quickStatusUpdate(order.id || order.orderId, 'shipped')}
                                                             title="Ship Order"
                                                         >
                                                             <i className="bi bi-truck"></i> Ship
@@ -290,7 +290,7 @@ export default function OrderManagement() {
                                                         <Button
                                                             variant="outline-success"
                                                             size="sm"
-                                                            onClick={() => quickStatusUpdate(order.id, 'delivered')}
+                                                            onClick={() => quickStatusUpdate(order.id || order.orderId, 'delivered')}
                                                             title="Mark as Delivered"
                                                         >
                                                             <i className="bi bi-check2-all"></i> Deliver
@@ -300,7 +300,7 @@ export default function OrderManagement() {
                                                         <Button
                                                             variant="outline-danger"
                                                             size="sm"
-                                                            onClick={() => quickStatusUpdate(order.id, 'cancelled')}
+                                                            onClick={() => quickStatusUpdate(order.id || order.orderId, 'cancelled')}
                                                             title="Cancel Order"
                                                         >
                                                             <i className="bi bi-x-circle"></i> Cancel
@@ -377,8 +377,8 @@ export default function OrderManagement() {
                                                 <tr key={index}>
                                                     <td>{item.orchidName || `Orchid #${item.orchidId}`}</td>
                                                     <td>{item.quantity}</td>
-                                                    <td>${item.price?.toFixed(2) || '0.00'}</td>
-                                                    <td>${((item.price || 0) * (item.quantity || 0)).toFixed(2)}</td>
+                                                    <td>${item.unitPrice?.toFixed(2) || '0.00'}</td>
+                                                    <td>${item.subtotal?.toFixed(2) || ((item.unitPrice || 0) * (item.quantity || 0)).toFixed(2)}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
